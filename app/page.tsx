@@ -1,41 +1,63 @@
 "use client";
-import { useState } from "react";
-import { Invoice } from "@/types/invoice";
+
+import { useState, useEffect } from "react";
+import { Invoice, Company } from "@/types/invoice";
 import InvoiceForm from "./components/InvoiceForm";
 import InvoicePreview from "./components/InvoicePreview";
 
-const initialInvoiceState: Invoice = {
+const blankInvoiceState: Invoice = {
   invoiceNumber: "INV-001",
-  invoiceDate: new Date().toISOString().split("T")[0],
-  yourCompany: {
-    name: "K Suvidha Electronics",
-    address: "Naka Hindola, Charbagh, Lucknow, Uttar Pradesh",
-    gstin: "ABC123456",
-    phone: "1234567890",
-    email: "test@gmail.com",
-  },
-  client: {
-    name: "Customer Name",
-    address: "Customer Address",
-    gstin: "",
-    phone: "",
-    email: "",
-  },
-  items: [{ id: "1", description: "Torch", quantity: 1, price: 120.0 }],
+  invoiceDate: "",
+  yourCompany: { name: "", address: "", phone: "", email: "", gstin: "" },
+  client: { name: "", address: "" },
+  items: [{ id: "1", description: "", quantity: 1, price: 100 }],
   taxRate: 0,
   discount: 0,
   paymentMethod: "Cash",
-  signature: "",
-  // dueDate: '',
-  // currency: 'INR'
+  dueDate: "",
+  currency: "INR",
 };
 
+const LOCAL_STORAGE_KEY = "invoice-generator-biller-details";
+
 export default function Home() {
-  const [invoice, setInvoice] = useState<Invoice>(initialInvoiceState);
-  const [isLoading, setIsLoading] = useState(false);
+  const [invoice, setInvoice] = useState<Invoice>(blankInvoiceState);
+  const [isLoadingPDF, setIsLoadingPDF] = useState(false);
+
+  useEffect(() => {
+    const today = new Date().toISOString().split("T")[0];
+
+    const savedBillerDetails = localStorage.getItem(LOCAL_STORAGE_KEY);
+
+    let initialCompanyState: Company = {
+      name: "",
+      address: "",
+      phone: "",
+      email: "",
+      gstin: "",
+    };
+    if (savedBillerDetails) {
+      initialCompanyState = JSON.parse(savedBillerDetails);
+    }
+
+    setInvoice((prev) => ({
+      ...prev,
+      invoiceDate: today,
+      yourCompany: initialCompanyState,
+    }));
+  }, []);
+
+  useEffect(() => {
+    if (invoice.yourCompany.name) {
+      localStorage.setItem(
+        LOCAL_STORAGE_KEY,
+        JSON.stringify(invoice.yourCompany)
+      );
+    }
+  }, [invoice.yourCompany]);
 
   const handleDownload = async () => {
-    setIsLoading(true);
+    setIsLoadingPDF(true);
     try {
       const response = await fetch("/api/generate-pdf", {
         method: "POST",
@@ -62,37 +84,40 @@ export default function Home() {
       console.error("Failed to download PDF:", error);
       alert("Failed to download PDF. Please try again.");
     } finally {
-      setIsLoading(false);
+      setIsLoadingPDF(false);
     }
   };
 
-  return (
-    <main className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
-      <div className="max-w-7xl mx-auto mb-6 flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Invoice Generator</h1>
-        <button
-          onClick={handleDownload}
-          disabled={isLoading}
-          className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 disabled:bg-gray-400"
-        >
-          {isLoading ? "Generating..." : "Download PDF"}
-        </button>
-      </div>
+  const handlePrint = () => {
+    window.print();
+  };
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Left Side: The Form */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h1 className="text-2xl font-bold mb-6 text-gray-800">
-            Invoice Details
-          </h1>
+  return (
+    <main className="min-h-screen bg-gray-100 p-8">
+      <div className="max-w-7xl mx-auto mb-6 flex justify-between items-center print:hidden">
+        <h1 className="text-3xl font-bold text-gray-700">Invoice Generator</h1>
+        <div className="flex gap-2">
+          <button
+            onClick={handlePrint}
+            className="px-6 py-2 bg-gray-600 text-white font-semibold rounded-lg"
+          >
+            Print
+          </button>
+          <button
+            onClick={handleDownload}
+            disabled={isLoadingPDF}
+            className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg disabled:bg-gray-400"
+          >
+            {isLoadingPDF ? "Generating..." : "Download PDF"}
+          </button>
+        </div>
+      </div>
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 print:block">
+        <div className="bg-white p-6 rounded-lg shadow-md print:hidden">
+          <h2 className="text-2xl font-bold mb-6 text-gray-700">Invoice Details</h2>
           <InvoiceForm invoice={invoice} setInvoice={setInvoice} />
         </div>
-
-        {/* Right Side: The Preview */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-6 text-gray-800">
-            Live Preview
-          </h2>
+        <div className="bg-white p-6 rounded-lg shadow-md print:shadow-none">
           <InvoicePreview invoice={invoice} />
         </div>
       </div>
