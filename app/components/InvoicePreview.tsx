@@ -41,6 +41,9 @@ export default function InvoicePreview({ invoice }: InvoicePreviewProps) {
           {invoice.yourCompany.email && (
             <p className="text-gray-500">{invoice.yourCompany.email}</p>
           )}
+          {invoice.yourCompany.email && (
+            <p className="text-gray-500">{invoice.yourCompany.gstin}</p>
+          )}
         </div>
       </header>
 
@@ -50,6 +53,9 @@ export default function InvoicePreview({ invoice }: InvoicePreviewProps) {
           <h3 className="font-semibold text-gray-600 mb-1">BILL TO</h3>
           <p className="font-bold text-gray-800">{invoice.client.name}</p>
           <p className="text-gray-500 break-words">{invoice.client.address}</p>
+          <p className="text-gray-500 break-words">{invoice.client.email}</p>
+          <p className="text-gray-500 break-words">{invoice.client.phone}</p>
+          <p className="text-gray-500 break-words">{invoice.client.gstin}</p>
         </div>
         <div className="w-full sm:w-1/2 text-left sm:text-right">
           <p className="text-gray-600">

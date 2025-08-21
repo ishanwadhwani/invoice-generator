@@ -147,6 +147,24 @@ export default function InvoiceForm({ invoice, setInvoice }: InvoiceFormProps) {
               handleNestedChange("client", "address", e.target.value)
             }
           />
+          <input
+            type="text"
+            placeholder="Client's Email"
+            className="p-2 border rounded w-full"
+            value={invoice.client.email}
+            onChange={(e) =>
+              handleNestedChange("client", "email", e.target.value)
+            }
+          />
+          <input
+            type="text"
+            placeholder="Client's Phone"
+            className="p-2 border rounded w-full"
+            value={invoice.client.phone}
+            onChange={(e) =>
+              handleNestedChange("client", "phone", e.target.value)
+            }
+          />
         </div>
         <div className="mt-4">
           <label className="block text-sm font-medium text-gray-700">

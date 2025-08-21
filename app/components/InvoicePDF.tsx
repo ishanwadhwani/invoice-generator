@@ -169,6 +169,8 @@ export const InvoicePDF = ({ invoice }: { invoice: Invoice }) => {
               <Text>BILL TO</Text>
               <Text style={styles.billTo}>{invoice.client.name}</Text>
               <Text>{invoice.client.address}</Text>
+              <Text>{invoice.client.email}</Text>
+              <Text>{invoice.client.phone}</Text>
               {invoice.client.gstin && (
                 <Text style={styles.billToDetails}>
                   GSTIN: {invoice.client.gstin}
