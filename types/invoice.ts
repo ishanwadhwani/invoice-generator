@@ -3,6 +3,7 @@ export interface InvoiceItem {
   description: string;
   quantity: number;
   price: number;
+  hsn?: string;
 }
 
 export interface Company {
@@ -20,6 +21,7 @@ export interface Invoice {
   client: Company;
   items: InvoiceItem[];
   taxRate: number;
+  gstType: 'CGST+SGST' | 'IGST';
   discount: number;
   paymentMethod?: string;
   signature?: string;

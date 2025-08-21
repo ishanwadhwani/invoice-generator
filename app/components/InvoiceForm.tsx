@@ -30,8 +30,8 @@ export default function InvoiceForm({ invoice, setInvoice }: InvoiceFormProps) {
     const itemToUpdate = { ...newItems[index] };
 
     if (field === "quantity" || field === "price") {
-      itemToUpdate[field] = Number(value) || 0;
-    } else if (field === "description") {
+      itemToUpdate[field] = Number(value);
+    } else if (field === "description" || field === "hsn") {
       itemToUpdate[field] = String(value);
     }
 
@@ -43,6 +43,7 @@ export default function InvoiceForm({ invoice, setInvoice }: InvoiceFormProps) {
     const newItem: InvoiceItem = {
       id: nanoid(),
       description: "",
+      hsn: "",
       quantity: 1,
       price: 0,
     };
@@ -201,46 +202,63 @@ export default function InvoiceForm({ invoice, setInvoice }: InvoiceFormProps) {
         {invoice.items.map((item, index) => (
           <div
             key={item.id}
-            className="grid grid-cols-12 gap-2 mb-2 items-center"
+            className="grid grid-cols-12 gap-2 mb-2 items-start"
           >
-            <input
-              type="text"
-              placeholder="Description"
-              className="p-2 border rounded col-span-5"
-              value={item.description}
-              onChange={(e) =>
-                handleItemChange(index, "description", e.target.value)
-              }
-            />
-            <input
-              type="number"
-              placeholder="Quantity"
-              className="p-2 border rounded col-span-2"
-              value={item.quantity}
-              onChange={(e) =>
-                handleItemChange(index, "quantity", e.target.value)
-              }
-            />
-            <div className="relative col-span-3">
-              <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                ₹
-              </span>
+            <div className="col-span-12 sm:col-span-4">
+              <label className="text-xs text-gray-500">Description</label>
+              <input
+                type="text"
+                placeholder="Item Description"
+                className="p-2 border rounded w-full"
+                value={item.description}
+                onChange={(e) =>
+                  handleItemChange(index, "description", e.target.value)
+                }
+              />
+            </div>
+            <div className="col-span-6 sm:col-span-2">
+              <label className="text-xs text-gray-500">HSN/SAC</label>
+              <input
+                type="text"
+                placeholder="HSN Code"
+                className="p-2 border rounded w-full"
+                value={item.hsn}
+                onChange={(e) => handleItemChange(index, "hsn", e.target.value)}
+              />
+            </div>
+            <div className="col-span-6 sm:col-span-2">
+              <label className="text-xs text-gray-500">Qty</label>
               <input
                 type="number"
-                placeholder="Price"
-                className="p-2 border rounded w-full pl-7" // Added padding for the symbol
+                placeholder="1"
+                className="p-2 border rounded w-full"
+                value={item.quantity}
+                onChange={(e) =>
+                  handleItemChange(index, "quantity", e.target.value)
+                }
+              />
+            </div>
+            <div className="col-span-6 sm:col-span-2">
+              <label className="text-xs text-gray-500">Price</label>
+              <input
+                type="number"
+                placeholder="0.00"
+                className="p-2 border rounded w-full"
                 value={item.price}
                 onChange={(e) =>
                   handleItemChange(index, "price", e.target.value)
                 }
               />
             </div>
-            <div className="col-span-2 text-center">
-              {(item.quantity * item.price).toFixed(2)}
+            <div className="col-span-6 sm:col-span-2 flex flex-col items-end mt-2">
+              <label className="text-xs text-gray-500">Amount</label>
+              <p className="p-2 font-medium">
+                {(item.quantity * item.price).toFixed(2)}
+              </p>
             </div>
             <button
               onClick={() => handleRemoveItem(index)}
-              className="col-span-12 mt-1 sm:mt-0 sm:col-span-2 sm:col-start-11 text-red-500 hover:text-red-700 font-semibold"
+              className="col-span-12 text-red-500 hover:text-red-700 font-semibold text-left sm:text-right"
             >
               Remove
             </button>
@@ -253,6 +271,46 @@ export default function InvoiceForm({ invoice, setInvoice }: InvoiceFormProps) {
           Add Item
         </button>
       </div>
+
+      {/* GST Details */}
+      <div className="p-4 border rounded-lg text-gray-700">
+        <h3 className="font-semibold text-lg mb-2">GST Details</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              GST Type
+            </label>
+            <select
+              className="p-2 border rounded w-full mt-1"
+              value={invoice.gstType}
+              onChange={(e) =>
+                setInvoice({
+                  ...invoice,
+                  gstType: e.target.value as "CGST+SGST" | "IGST",
+                })
+              }
+            >
+              <option value="CGST+SGST">CGST + SGST (Intra-State)</option>
+              <option value="IGST">IGST (Inter-State)</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Total GST Rate (%)
+            </label>
+            <input
+              type="number"
+              className="p-2 border rounded w-full mt-1"
+              value={invoice.taxRate}
+              onChange={(e) =>
+                setInvoice({ ...invoice, taxRate: Number(e.target.value) })
+              }
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* {payment method and signature} */}
       <div className="p-4 border rounded-lg text-gray-700">
         <h3 className="font-semibold text-lg mb-2">Payment & Signature</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
