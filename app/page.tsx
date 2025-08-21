@@ -125,21 +125,21 @@ export default function Home() {
         <div className="flex flex-wrap gap-2">
           <button
             onClick={handleNewInvoice}
-            className="px-6 py-2 bg-green-600 text-white font-semibold rounded-lg"
+            className="px-6 py-2 bg-green-600 text-white font-semibold rounded-lg cursor-pointer"
           >
             New Invoice
           </button>
 
           <button
             onClick={handlePrint}
-            className="px-6 py-2 bg-gray-600 text-white font-semibold rounded-lg"
+            className="px-6 py-2 bg-gray-600 text-white font-semibold rounded-lg cursor-pointer"
           >
             Print
           </button>
           <button
             onClick={handleDownload}
             disabled={isLoadingPDF}
-            className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg disabled:bg-gray-400"
+            className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg disabled:bg-gray-400 cursor-pointer"
           >
             {isLoadingPDF ? "Generating..." : "Download PDF"}
           </button>
