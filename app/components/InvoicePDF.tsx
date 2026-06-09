@@ -23,6 +23,12 @@ const styles = StyleSheet.create({
     padding: 30,
     backgroundColor: "#FFFFFF",
   },
+  outerContainer: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#000000",
+    padding: 10,
+  },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -34,29 +40,94 @@ const styles = StyleSheet.create({
   headerLeft: { flexDirection: "column", fontSize: 20 },
   headerRight: {
     flexDirection: "column",
-    alignItems: "flex-end",
+    alignItems: "flex-start",
     maxWidth: "50%",
   },
   companyName: { fontSize: 20, fontWeight: "bold" },
   companyDetails: { fontSize: 9, textAlign: "right", color: "#555555" },
   invoiceTitle: { fontSize: 32, fontWeight: "bold" },
   invoiceInfo: { marginTop: 5, fontSize: 11 },
-  billToSection: {
-    marginTop: 20,
+
+  // Bill To — two-column table layout
+  billToTable: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: "#000000",
   },
-  billTo: { marginTop: 5, fontWeight: "bold" },
+  billToLeft: {
+    width: "50%",
+    padding: 8,
+    borderRightWidth: 1,
+    borderRightColor: "#000000",
+  },
+  billToLeftLabel: {
+    fontSize: 9,
+    color: "#555555",
+    marginBottom: 3,
+  },
+  billToName: { fontWeight: "bold", fontSize: 11, marginBottom: 2 },
   billToDetails: { fontSize: 9, color: "#555555" },
-  table: { marginTop: 20, width: "100%" },
-  tableHeader: { flexDirection: "row", backgroundColor: "#F3F4F6" },
-  tableRow: {
+  billToRight: {
+    width: "50%",
+  },
+  billToRightRow: {
     flexDirection: "row",
     borderBottomWidth: 1,
-    borderBottomColor: "#EEEEEE",
+    borderBottomColor: "#000000",
+    minHeight: 20,
   },
-  tableColHeader: { padding: 5, fontWeight: "bold", fontSize: 10 },
-  tableCol: { padding: 5 },
+  billToRightRowLast: {
+    flexDirection: "row",
+    minHeight: 20,
+  },
+  billToRightLabel: {
+    width: "45%",
+    padding: 4,
+    fontSize: 9,
+    borderRightWidth: 1,
+    borderRightColor: "#000000",
+    color: "#333333",
+  },
+  billToRightValue: {
+    flex: 1,
+    padding: 4,
+    fontSize: 9,
+    fontWeight: "bold",
+  },
+
+  // Items table — full grid borders
+  tableWithBorder: {
+    marginTop: 10,
+    width: "100%",
+    borderTopWidth: 1,
+    borderTopColor: "#000000",
+    borderLeftWidth: 1,
+    borderLeftColor: "#000000",
+  },
+  tableHeaderBordered: {
+    flexDirection: "row",
+    backgroundColor: "#F3F4F6",
+  },
+  tableRowBordered: {
+    flexDirection: "row",
+  },
+  tableColHeaderBordered: {
+    padding: 5,
+    fontWeight: "bold",
+    fontSize: 10,
+    borderRightWidth: 1,
+    borderRightColor: "#000000",
+    borderBottomWidth: 1,
+    borderBottomColor: "#000000",
+  },
+  tableColBordered: {
+    padding: 5,
+    borderRightWidth: 1,
+    borderRightColor: "#000000",
+    borderBottomWidth: 1,
+    borderBottomColor: "#000000",
+  },
   hsnText: { fontSize: 8, color: "#555555" },
   colDescription: { width: "45%" },
   colHsn: { width: "15%", textAlign: "center" },
@@ -64,22 +135,58 @@ const styles = StyleSheet.create({
   colQty: { width: "10%", textAlign: "center" },
   colPrice: { width: "15%", textAlign: "right" },
   colAmount: { width: "15%", textAlign: "right" },
-  summary: { marginTop: 20, flexDirection: "row", justifyContent: "flex-end" },
-  summaryBox: { width: "40%" },
-  summaryRow: {
+
+  // Summary — bordered table aligned right
+  summaryContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 3,
+    justifyContent: "flex-end",
+    marginTop: 10,
   },
-  summaryTotal: {
+  summaryTableBox: {
+    width: "40%",
+    borderLeftWidth: 1,
+    borderLeftColor: "#000000",
+    borderTopWidth: 1,
+    borderTopColor: "#000000",
+  },
+  summaryTableRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    paddingTop: 5,
-    marginTop: 5,
-    borderTopWidth: 2,
-    borderTopColor: "#DDDDDD",
+    borderBottomWidth: 1,
+    borderBottomColor: "#000000",
   },
-  totalText: { fontWeight: "bold", fontSize: 14 },
+  summaryTableLabel: {
+    flex: 1,
+    padding: 4,
+    borderRightWidth: 1,
+    borderRightColor: "#000000",
+    fontSize: 10,
+  },
+  summaryTableValue: {
+    width: "45%",
+    padding: 4,
+    textAlign: "right",
+    borderRightWidth: 1,
+    borderRightColor: "#000000",
+    fontSize: 10,
+  },
+  summaryTableTotalLabel: {
+    flex: 1,
+    padding: 5,
+    borderRightWidth: 1,
+    borderRightColor: "#000000",
+    fontWeight: "bold",
+    fontSize: 12,
+  },
+  summaryTableTotalValue: {
+    width: "45%",
+    padding: 5,
+    textAlign: "right",
+    borderRightWidth: 1,
+    borderRightColor: "#000000",
+    fontWeight: "bold",
+    fontSize: 12,
+  },
+
   footer: {
     marginTop: 40,
     paddingTop: 10,
@@ -114,7 +221,7 @@ const styles = StyleSheet.create({
 export const InvoicePDF = ({ invoice }: { invoice: Invoice }) => {
   const subtotal = invoice.items.reduce(
     (acc, item) => acc + item.quantity * item.price,
-    0
+    0,
   );
 
   const totalGstAmount = (subtotal * invoice.taxRate) / 100;
@@ -127,19 +234,9 @@ export const InvoicePDF = ({ invoice }: { invoice: Invoice }) => {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        <View style={{ flex: 1 }}>
+        <View style={styles.outerContainer}>
           {/* Header */}
           <View style={styles.header}>
-            <View style={styles.headerLeft}>
-              {invoice.taxRate === 0 ? (
-                <Text fixed>Bill of Supply</Text>
-              ) : (
-                <Text>Tax Invoice</Text>
-              )}
-              <Text style={styles.invoiceInfo}>
-                Invoice #: {invoice.invoiceNumber}
-              </Text>
-            </View>
             <View style={styles.headerRight}>
               <Text style={styles.companyName}>{invoice.yourCompany.name}</Text>
               <Text style={styles.companyDetails}>
@@ -161,102 +258,172 @@ export const InvoicePDF = ({ invoice }: { invoice: Invoice }) => {
                 </Text>
               )}
             </View>
-          </View>
-
-          {/* Bill To */}
-          <View style={styles.billToSection}>
-            <View>
-              <Text>BILL TO</Text>
-              <Text style={styles.billTo}>{invoice.client.name}</Text>
-              <Text>{invoice.client.address}</Text>
-              <Text>{invoice.client.email}</Text>
-              <Text>{invoice.client.phone}</Text>
-              {invoice.client.gstin && (
-                <Text style={styles.billToDetails}>
-                  GSTIN: {invoice.client.gstin}
-                </Text>
+            <View style={styles.headerLeft}>
+              {invoice.taxRate === 0 ? (
+                <Text fixed>Bill of Supply</Text>
+              ) : (
+                <Text>Tax Invoice</Text>
               )}
-            </View>
-            <View style={styles.headerRight}>
-              <Text>Date: {invoice.invoiceDate}</Text>
-              {invoice.dueDate && <Text>Due Date: {invoice.dueDate}</Text>}
+              <Text style={styles.invoiceInfo}>
+                Invoice #: {invoice.invoiceNumber}
+              </Text>
             </View>
           </View>
 
-          {/* Table */}
-          <View style={styles.table}>
-            <View style={styles.tableHeader}>
-              <Text style={[styles.tableColHeader, styles.colDescription]}>
-                Description
+          {/* Bill To — table with columns and rows */}
+          <View style={styles.billToTable}>
+            {/* Left column: buyer details */}
+            <View style={styles.billToLeft}>
+              <Text style={styles.billToLeftLabel}>Buyer</Text>
+              <Text style={styles.billToName}>{invoice.client.name}</Text>
+              {invoice.client.address ? (
+                <Text style={styles.billToDetails}>{invoice.client.address}</Text>
+              ) : null}
+              {invoice.client.phone ? (
+                <Text style={styles.billToDetails}>{invoice.client.phone}</Text>
+              ) : null}
+              {invoice.client.email ? (
+                <Text style={styles.billToDetails}>{invoice.client.email}</Text>
+              ) : null}
+              {invoice.client.gstin ? (
+                <Text style={styles.billToDetails}>
+                  GSTIN/UIN : {invoice.client.gstin}
+                </Text>
+              ) : null}
+            </View>
+
+            {/* Right column: invoice metadata grid */}
+            <View style={styles.billToRight}>
+              <View style={styles.billToRightRow}>
+                <Text style={styles.billToRightLabel}>Invoice No.</Text>
+                <Text style={styles.billToRightValue}>
+                  {invoice.invoiceNumber}
+                </Text>
+              </View>
+              <View style={styles.billToRightRow}>
+                <Text style={styles.billToRightLabel}>Dated</Text>
+                <Text style={styles.billToRightValue}>
+                  {invoice.invoiceDate}
+                </Text>
+              </View>
+              <View style={styles.billToRightRow}>
+                <Text style={styles.billToRightLabel}>Delivery Note</Text>
+                <Text style={styles.billToRightValue}></Text>
+              </View>
+              <View style={styles.billToRightRow}>
+                <Text style={styles.billToRightLabel}>
+                  Mode/Terms of Payment
+                </Text>
+                <Text style={styles.billToRightValue}>
+                  {invoice.paymentMethod || ""}
+                </Text>
+              </View>
+              <View style={styles.billToRightRowLast}>
+                <Text style={styles.billToRightLabel}>Terms of Delivery</Text>
+                <Text style={styles.billToRightValue}>
+                  {invoice.dueDate ? `Due: ${invoice.dueDate}` : ""}
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Items Table — full grid */}
+          <View style={styles.tableWithBorder}>
+            <View style={styles.tableHeaderBordered}>
+              <Text
+                style={[styles.tableColHeaderBordered, styles.colDescription]}
+              >
+                Product
               </Text>
-              <Text style={[styles.tableColHeader, styles.colHsn]}>
+              <Text style={[styles.tableColHeaderBordered, styles.colHsn]}>
                 HSN/SAC
               </Text>
-              <Text style={[styles.tableColHeader, styles.colQty]}>Qty</Text>
-              <Text style={[styles.tableColHeader, styles.colPrice]}>
-                Unit Price
+              <Text style={[styles.tableColHeaderBordered, styles.colQty]}>
+                Qty
               </Text>
-              <Text style={[styles.tableColHeader, styles.colAmount]}>
+              <Text style={[styles.tableColHeaderBordered, styles.colPrice]}>
+                Rate
+              </Text>
+              <Text style={[styles.tableColHeaderBordered, styles.colAmount]}>
                 Amount
               </Text>
             </View>
             {invoice.items.map((item) => (
-              <View key={item.id} style={styles.tableRow}>
-                <Text style={[styles.tableCol, styles.colDescription]}>
+              <View key={item.id} style={styles.tableRowBordered}>
+                <Text style={[styles.tableColBordered, styles.colDescription]}>
                   {item.description}
                 </Text>
-                <Text style={[styles.tableCol, styles.colHsn]}>
-                  {item.hsn || "N/A"}
+                <Text style={[styles.tableColBordered, styles.colHsn]}>
+                  {item.hsn || ""}
                 </Text>
-                <Text style={[styles.tableCol, styles.colQty]}>
+                <Text style={[styles.tableColBordered, styles.colQty]}>
                   {item.quantity}
                 </Text>
-                <Text style={[styles.tableCol, styles.colPrice]}>
+                <Text style={[styles.tableColBordered, styles.colPrice]}>
                   ₹{item.price.toFixed(2)}
                 </Text>
-                <Text style={[styles.tableCol, styles.colAmount]}>
+                <Text style={[styles.tableColBordered, styles.colAmount]}>
                   ₹{(item.quantity * item.price).toFixed(2)}
                 </Text>
               </View>
             ))}
           </View>
 
-          {/* Summary */}
-          <View style={styles.summary}>
-            <View style={styles.summaryBox}>
-              <View style={styles.summaryRow}>
-                <Text>Subtotal</Text>
-                <Text>₹{subtotal.toFixed(2)}</Text>
+          {/* Summary — bordered table */}
+          <View style={styles.summaryContainer}>
+            <View style={styles.summaryTableBox}>
+              <View style={styles.summaryTableRow}>
+                <Text style={styles.summaryTableLabel}>Subtotal</Text>
+                <Text style={styles.summaryTableValue}>
+                  ₹{subtotal.toFixed(2)}
+                </Text>
               </View>
 
               {invoice.taxRate > 0 &&
                 (invoice.gstType === "CGST+SGST" ? (
                   <>
-                    <View style={styles.summaryRow}>
-                      <Text>CGST ({invoice.taxRate / 2}%)</Text>
-                      <Text>₹{cgstAmount.toFixed(2)}</Text>
+                    <View style={styles.summaryTableRow}>
+                      <Text style={styles.summaryTableLabel}>
+                        CGST ({invoice.taxRate / 2}%)
+                      </Text>
+                      <Text style={styles.summaryTableValue}>
+                        ₹{cgstAmount.toFixed(2)}
+                      </Text>
                     </View>
-                    <View style={styles.summaryRow}>
-                      <Text>SGST ({invoice.taxRate / 2}%)</Text>
-                      <Text>₹{sgstAmount.toFixed(2)}</Text>
+                    <View style={styles.summaryTableRow}>
+                      <Text style={styles.summaryTableLabel}>
+                        SGST ({invoice.taxRate / 2}%)
+                      </Text>
+                      <Text style={styles.summaryTableValue}>
+                        ₹{sgstAmount.toFixed(2)}
+                      </Text>
                     </View>
                   </>
                 ) : (
-                  <View style={styles.summaryRow}>
-                    <Text>IGST ({invoice.taxRate}%)</Text>
-                    <Text>₹{igstAmount.toFixed(2)}</Text>
+                  <View style={styles.summaryTableRow}>
+                    <Text style={styles.summaryTableLabel}>
+                      IGST ({invoice.taxRate}%)
+                    </Text>
+                    <Text style={styles.summaryTableValue}>
+                      ₹{igstAmount.toFixed(2)}
+                    </Text>
                   </View>
                 ))}
 
               {invoice.discount > 0 && (
-                <View style={styles.summaryRow}>
-                  <Text>Discount</Text>
-                  <Text>-₹{invoice.discount.toFixed(2)}</Text>
+                <View style={styles.summaryTableRow}>
+                  <Text style={styles.summaryTableLabel}>Discount</Text>
+                  <Text style={styles.summaryTableValue}>
+                    -₹{invoice.discount.toFixed(2)}
+                  </Text>
                 </View>
               )}
-              <View style={styles.summaryTotal}>
-                <Text style={styles.totalText}>Total</Text>
-                <Text style={styles.totalText}>₹{total.toFixed(2)}</Text>
+
+              <View style={styles.summaryTableRow}>
+                <Text style={styles.summaryTableTotalLabel}>Total</Text>
+                <Text style={styles.summaryTableTotalValue}>
+                  ₹{total.toFixed(2)}
+                </Text>
               </View>
             </View>
           </View>
@@ -278,7 +445,6 @@ export const InvoicePDF = ({ invoice }: { invoice: Invoice }) => {
             {invoice.signature ? (
               <Image src={invoice.signature} style={styles.signature} />
             ) : (
-              // Fallback to company name if no signature
               <View style={styles.signature}>
                 <Text style={styles.signatureFallback}>
                   ({invoice.yourCompany.name})
