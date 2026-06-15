@@ -4,6 +4,8 @@ export interface InvoiceItem {
   quantity: number;
   price: number;
   hsn?: string;
+  unit?: string;
+  discountPercent?: number;
 }
 
 export interface Company {
@@ -12,6 +14,7 @@ export interface Company {
   gstin?: string;
   phone?: string;
   email?: string;
+  stateName?: string;
 }
 
 export interface Invoice {
@@ -27,4 +30,21 @@ export interface Invoice {
   signature?: string;
   dueDate?: string;
   currency?: string;
+  // Shipment / order metadata
+  deliveryNote?: string;
+  otherReferences?: string;
+  buyerOrderNo?: string;
+  buyerOrderDate?: string;
+  despatchDocNo?: string;
+  deliveryNoteDate?: string;
+  despatchedThrough?: string;
+  destination?: string;
+  termsOfDelivery?: string;
+  // Company extras
+  pan?: string;
+  declaration?: string;
+  bankName?: string;
+  bankAccountNo?: string;
+  bankIfscCode?: string;
+  jurisdiction?: string;
 }
